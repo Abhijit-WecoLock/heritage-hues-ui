@@ -58,10 +58,15 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         heritage: {
-          brown: "hsl(var(--heritage-brown))",
-          beige: "hsl(var(--heritage-beige))",
-          terracotta: "hsl(var(--heritage-terracotta))",
-          olive: "hsl(var(--heritage-olive))",
+          ivory: "hsl(var(--heritage-ivory))",
+          coral: "hsl(var(--heritage-coral))",
+          sage: "hsl(var(--heritage-sage))",
+          charcoal: "hsl(var(--heritage-charcoal))",
+          emerald: "hsl(var(--heritage-emerald))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
       },
       borderRadius: {
@@ -110,6 +115,27 @@ export default {
             transform: "translateY(0)",
           },
         },
+        slideUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        countUp: {
+          "0%": {
+            transform: "scale(0.8)",
+          },
+          "50%": {
+            transform: "scale(1.1)",
+          },
+          "100%": {
+            transform: "scale(1)",
+          },
+        },
         confetti: {
           "0%": {
             transform: "translateY(0) rotate(0deg)",
@@ -126,6 +152,8 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "page-enter": "pageEnter 320ms cubic-bezier(0.2, 0.8, 0.2, 1)",
         "fade-up": "fadeUp 320ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "slide-up": "slideUp 320ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "count-up": "countUp 200ms ease-out",
         confetti: "confetti 1s ease-out forwards",
       },
     },

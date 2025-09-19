@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Minus, Plus, CheckCircle, ArrowRight, ArrowLeft, Lock } from "lucide-react";
+import { Minus, Plus, CheckCircle, ArrowRight, ArrowLeft, Lock, MapPin, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import { toast } from "@/hooks/use-toast";
@@ -13,6 +13,13 @@ interface LockerOption {
   hours: number;
   multiplier: number;
   popular?: boolean;
+}
+
+interface LockerAssignment {
+  section: string;
+  lockerNumbers: number[];
+  location: string;
+  nearEntrance: string;
 }
 
 const lockerOptions: LockerOption[] = [
@@ -25,12 +32,37 @@ const lockerOptions: LockerOption[] = [
 
 const baseLockerPrice = 8; // $8 base price per locker
 
+// Simulate AI locker assignment
+const simulateLockerAssignment = (count: number): Promise<LockerAssignment> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const sections = ["A", "B", "C", "D"];
+      const locations = ["Main Hall", "East Wing", "West Wing", "North Gallery"];
+      const entrances = ["Main Entrance", "East Wing Entrance", "West Wing Entrance", "North Gallery Entrance"];
+      
+      const sectionIndex = Math.floor(Math.random() * sections.length);
+      const startLocker = Math.floor(Math.random() * 50) + 1;
+      const lockerNumbers = Array.from({ length: count }, (_, i) => startLocker + i);
+      
+      resolve({
+        section: sections[sectionIndex],
+        lockerNumbers,
+        location: locations[sectionIndex],
+        nearEntrance: entrances[sectionIndex]
+      });
+    }, 1200); // Simulate AI processing time
+  });
+};
+
 const LockerSelection = () => {
   const navigate = useNavigate();
   const [wantsLockers, setWantsLockers] = useState<boolean | null>(null);
   const [lockerCount, setLockerCount] = useState(1);
   const [selectedDuration, setSelectedDuration] = useState("1 hour");
   const [ticketData, setTicketData] = useState<any>(null);
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [lockerAssignment, setLockerAssignment] = useState<LockerAssignment | null>(null);
+  const [showAssignment, setShowAssignment] = useState(false);
 
   useEffect(() => {
     // Load ticket selection data
@@ -58,12 +90,61 @@ const LockerSelection = () => {
     return ticketTotal + lockerTotal;
   };
 
+  const handleLockerSelection = async (wants: boolean) => {
+    setWantsLockers(wants);
+    
+    if (wants) {
+      setIsAssigning(true);
+      try {
+        const assignment = await simulateLockerAssignment(lockerCount);
+        setLockerAssignment(assignment);
+        setShowAssignment(true);
+        toast({
+          title: "Lockers Reserved!",
+          description: `${lockerCount} locker${lockerCount > 1 ? 's' : ''} assigned in Section ${assignment.section}`,
+          variant: "default",
+        });
+      } catch (error) {
+        toast({
+          title: "Assignment Failed",
+          description: "We couldn't assign lockers in your preferred zone. We've reserved alternative lockers for you.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsAssigning(false);
+      }
+    }
+  };
+
+  const handleQuantityChange = async (newCount: number) => {
+    setLockerCount(newCount);
+    
+    if (wantsLockers && newCount !== lockerCount) {
+      setIsAssigning(true);
+      setShowAssignment(false);
+      try {
+        const assignment = await simulateLockerAssignment(newCount);
+        setLockerAssignment(assignment);
+        setShowAssignment(true);
+      } catch (error) {
+        toast({
+          title: "Reassignment Error",
+          description: "Couldn't update locker assignment. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsAssigning(false);
+      }
+    }
+  };
+
   const handleContinue = () => {
     const lockerSelection = wantsLockers ? {
       count: lockerCount,
       duration: selectedDuration,
       hours: getSelectedOption()?.hours || 0,
-      price: getLockerPrice()
+      price: getLockerPrice(),
+      assignment: lockerAssignment
     } : null;
 
     // Store combined selection
@@ -117,15 +198,24 @@ const LockerSelection = () => {
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-sm mx-auto">
                   <Button 
-                    onClick={() => setWantsLockers(true)}
+                    onClick={() => handleLockerSelection(true)}
                     className="heritage-button-primary flex-1"
+                    disabled={isAssigning}
                   >
-                    Yes, Add Lockers
+                    {isAssigning ? (
+                      <>
+                        <Zap className="mr-2 h-4 w-4 animate-spin" />
+                        Assigning...
+                      </>
+                    ) : (
+                      "Yes, Add Lockers"
+                    )}
                   </Button>
                   <Button 
                     variant="outline"
                     onClick={handleSkipLockers}
                     className="flex-1"
+                    disabled={isAssigning}
                   >
                     No Thanks
                   </Button>
@@ -150,17 +240,17 @@ const LockerSelection = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => setLockerCount(Math.max(1, lockerCount - 1))}
-                      disabled={lockerCount <= 1}
+                      onClick={() => handleQuantityChange(Math.max(1, lockerCount - 1))}
+                      disabled={lockerCount <= 1 || isAssigning}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <div className="text-2xl font-bold px-6">{lockerCount}</div>
+                    <div className="text-2xl font-bold px-6 animate-count-up">{lockerCount}</div>
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => setLockerCount(Math.min(6, lockerCount + 1))}
-                      disabled={lockerCount >= 6}
+                      onClick={() => handleQuantityChange(Math.min(6, lockerCount + 1))}
+                      disabled={lockerCount >= 6 || isAssigning}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -200,22 +290,71 @@ const LockerSelection = () => {
                 </CardContent>
               </Card>
 
-              {/* Price Preview */}
-              <Card className="heritage-card">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <div className="flex-1">
-                      <p className="font-semibold">
-                        {lockerCount} locker{lockerCount > 1 ? 's' : ''} reserved for your visit
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedDuration} • ${getLockerPrice()} total
-                      </p>
+              {/* AI Locker Assignment Display */}
+              {showAssignment && lockerAssignment && (
+                <Card className="locker-assignment-card border-success">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-success/20 rounded-full p-2">
+                        <CheckCircle className="h-6 w-6 text-success" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-success mb-2 flex items-center gap-2">
+                          ✅ Lockers Reserved
+                        </h3>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">Section {lockerAssignment.section}</span>
+                            <span className="text-muted-foreground">•</span>
+                            <span>Locker{lockerAssignment.lockerNumbers.length > 1 ? 's' : ''} {lockerAssignment.lockerNumbers.join(', ')}</span>
+                          </div>
+                          <div className="text-muted-foreground">
+                            Near {lockerAssignment.nearEntrance} • {lockerAssignment.location}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-2">
+                            Locker codes will be delivered with your tickets
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Loading State */}
+              {isAssigning && (
+                <Card className="heritage-card">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-3">
+                      <Zap className="h-6 w-6 text-primary animate-spin" />
+                      <div>
+                        <p className="font-semibold">Finding optimal lockers...</p>
+                        <p className="text-sm text-muted-foreground">AI is analyzing museum layout and traffic</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Price Preview */}
+              {!isAssigning && wantsLockers && (
+                <Card className="heritage-card">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-success" />
+                      <div className="flex-1">
+                        <p className="font-semibold">
+                          {lockerCount} locker{lockerCount > 1 ? 's' : ''} reserved for your visit
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {selectedDuration} • ${getLockerPrice()} total
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
 

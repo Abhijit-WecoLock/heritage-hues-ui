@@ -8,52 +8,57 @@ All colors MUST be HSL. Typography: Inter for clean, museum-quality aesthetic.
 
 @layer base {
   :root {
-    /* Heritage Museum Color Palette */
-    --heritage-brown: 20 44% 21%;        /* #4A2E1E - Header */
-    --heritage-beige: 33 47% 93%;        /* #F6EFE7 - Background */
-    --heritage-terracotta: 27 44% 50%;   /* #B8734A - Primary CTA */
-    --heritage-olive: 87 23% 51%;        /* #8AA16B - Secondary */
+    /* Heritage Museum Color Palette - Updated */
+    --heritage-ivory: 60 25% 98%;        /* #FAFAF7 - Background */
+    --heritage-coral: 5 100% 69%;        /* #FF6F61 - Primary CTA */
+    --heritage-sage: 130 22% 62%;        /* #8AAE92 - Secondary */
+    --heritage-charcoal: 0 0% 18%;       /* #2D2D2D - Accent */
+    --heritage-emerald: 150 49% 44%;     /* #3BA776 - Success */
     
     /* Semantic Design Tokens */
-    --background: var(--heritage-beige);
-    --foreground: var(--heritage-brown);
+    --background: var(--heritage-ivory);
+    --foreground: var(--heritage-charcoal);
     
     --card: 0 0% 100%;
-    --card-foreground: var(--heritage-brown);
+    --card-foreground: var(--heritage-charcoal);
     
     --popover: 0 0% 100%;
-    --popover-foreground: var(--heritage-brown);
+    --popover-foreground: var(--heritage-charcoal);
     
-    --primary: var(--heritage-terracotta);
+    --primary: var(--heritage-coral);
     --primary-foreground: 0 0% 100%;
     
-    --secondary: var(--heritage-olive);
+    --secondary: var(--heritage-sage);
     --secondary-foreground: 0 0% 100%;
     
-    --muted: 33 20% 88%;
-    --muted-foreground: var(--heritage-brown);
+    --muted: 60 10% 92%;
+    --muted-foreground: var(--heritage-charcoal);
     
-    --accent: var(--heritage-olive);
+    --accent: var(--heritage-sage);
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 33 20% 85%;
-    --input: 0 0% 100%;
-    --ring: var(--heritage-terracotta);
+    --success: var(--heritage-emerald);
+    --success-foreground: 0 0% 100%;
     
-    --header-bg: var(--heritage-brown);
-    --header-foreground: var(--heritage-beige);
+    --border: 60 10% 88%;
+    --input: 0 0% 100%;
+    --ring: var(--heritage-coral);
+    
+    --header-bg: var(--heritage-charcoal);
+    --header-foreground: var(--heritage-ivory);
     
     /* Shadows & Effects */
-    --shadow-soft: 0 2px 8px hsl(var(--heritage-brown) / 0.1);
-    --shadow-card: 0 4px 16px hsl(var(--heritage-brown) / 0.08);
-    --shadow-lift: 0 8px 24px hsl(var(--heritage-brown) / 0.12);
+    --shadow-soft: 0 2px 8px hsl(var(--heritage-charcoal) / 0.1);
+    --shadow-card: 0 4px 16px hsl(var(--heritage-charcoal) / 0.08);
+    --shadow-lift: 0 8px 24px hsl(var(--heritage-charcoal) / 0.12);
+    --shadow-glow: 0 0 20px hsl(var(--heritage-coral) / 0.3);
     
     /* Gradients */
-    --gradient-warm: linear-gradient(135deg, hsl(var(--heritage-terracotta)), hsl(var(--heritage-olive)));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--heritage-beige)), hsl(33 30% 90%));
+    --gradient-warm: linear-gradient(135deg, hsl(var(--heritage-coral)), hsl(var(--heritage-sage)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--heritage-ivory)), hsl(60 15% 95%));
     
     /* Animation Timings */
     --transition-smooth: all 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -130,7 +135,7 @@ All colors MUST be HSL. Typography: Inter for clean, museum-quality aesthetic.
 @layer components {
   /* Heritage Museum Component Styles */
   .heritage-card {
-    @apply bg-card rounded-lg shadow-[var(--shadow-card)] border border-border transition-[transform,box-shadow] duration-300;
+    @apply bg-card rounded-xl shadow-[var(--shadow-card)] border border-border transition-[transform,box-shadow] duration-300;
   }
   
   .heritage-card:hover {
@@ -138,7 +143,7 @@ All colors MUST be HSL. Typography: Inter for clean, museum-quality aesthetic.
   }
   
   .heritage-button-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-[background-color,transform] duration-150;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[var(--shadow-glow)] active:scale-95 transition-[background-color,transform,box-shadow] duration-150;
   }
   
   .heritage-button-secondary {
@@ -163,6 +168,18 @@ All colors MUST be HSL. Typography: Inter for clean, museum-quality aesthetic.
   
   .animate-fade-up {
     @apply animate-[fadeUp_320ms_cubic-bezier(0.2,0.8,0.2,1)_forwards];
+  }
+  
+  .animate-slide-up {
+    @apply animate-[slideUp_320ms_cubic-bezier(0.2,0.8,0.2,1)_forwards];
+  }
+  
+  .animate-count-up {
+    @apply transition-[transform] duration-200 animate-pulse;
+  }
+  
+  .locker-assignment-card {
+    @apply bg-success/10 border-success/20 text-success-foreground rounded-xl p-4 animate-slide-up;
   }
 }
 
