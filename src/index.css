@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Heritage City Museum Design System
+All colors MUST be HSL. Typography: Inter for clean, museum-quality aesthetic.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    /* Heritage Museum Color Palette */
+    --heritage-brown: 20 44% 21%;        /* #4A2E1E - Header */
+    --heritage-beige: 33 47% 93%;        /* #F6EFE7 - Background */
+    --heritage-terracotta: 27 44% 50%;   /* #B8734A - Primary CTA */
+    --heritage-olive: 87 23% 51%;        /* #8AA16B - Secondary */
+    
+    /* Semantic Design Tokens */
+    --background: var(--heritage-beige);
+    --foreground: var(--heritage-brown);
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: var(--heritage-brown);
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --popover-foreground: var(--heritage-brown);
+    
+    --primary: var(--heritage-terracotta);
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: var(--heritage-olive);
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 33 20% 88%;
+    --muted-foreground: var(--heritage-brown);
+    
+    --accent: var(--heritage-olive);
+    --accent-foreground: 0 0% 100%;
+    
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 33 20% 85%;
+    --input: 0 0% 100%;
+    --ring: var(--heritage-terracotta);
+    
+    --header-bg: var(--heritage-brown);
+    --header-foreground: var(--heritage-beige);
+    
+    /* Shadows & Effects */
+    --shadow-soft: 0 2px 8px hsl(var(--heritage-brown) / 0.1);
+    --shadow-card: 0 4px 16px hsl(var(--heritage-brown) / 0.08);
+    --shadow-lift: 0 8px 24px hsl(var(--heritage-brown) / 0.12);
+    
+    /* Gradients */
+    --gradient-warm: linear-gradient(135deg, hsl(var(--heritage-terracotta)), hsl(var(--heritage-olive)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--heritage-beige)), hsl(33 30% 90%));
+    
+    /* Animation Timings */
+    --transition-smooth: all 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transition-quick: all 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    
+    --radius: 8px;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +123,56 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-['Inter',_sans-serif];
+  }
+}
+
+@layer components {
+  /* Heritage Museum Component Styles */
+  .heritage-card {
+    @apply bg-card rounded-lg shadow-[var(--shadow-card)] border border-border transition-[transform,box-shadow] duration-300;
+  }
+  
+  .heritage-card:hover {
+    @apply transform -translate-y-1.5 shadow-[var(--shadow-lift)];
+  }
+  
+  .heritage-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-[background-color,transform] duration-150;
+  }
+  
+  .heritage-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 active:scale-95 transition-[background-color,transform] duration-150;
+  }
+  
+  .heritage-header {
+    @apply bg-[hsl(var(--header-bg))] text-[hsl(var(--header-foreground))];
+  }
+  
+  .heritage-gradient {
+    background: var(--gradient-warm);
+  }
+  
+  .heritage-grid {
+    @apply grid grid-cols-1 md:grid-cols-12 gap-6;
+  }
+  
+  .animate-page-enter {
+    @apply animate-[pageEnter_320ms_cubic-bezier(0.2,0.8,0.2,1)_forwards];
+  }
+  
+  .animate-fade-up {
+    @apply animate-[fadeUp_320ms_cubic-bezier(0.2,0.8,0.2,1)_forwards];
+  }
+}
+
+@layer utilities {
+  .text-24 {
+    font-size: 1.5rem;
+    line-height: 1.5;
+  }
+  
+  .baseline-24 {
+    line-height: 1.5rem;
   }
 }
